@@ -111,6 +111,8 @@ urlpatterns = [
   path("update_rent/<int:id>",RentUpdateView.as_view(),name="update_rent"),
   path("delete_rent/<int:id>",RentDestroyView.as_view(),name="delete_rent"),
 
+  path("get_staff_rents", get_staff_rents, name="get_staff_rents"),
+
 
   #---------------------------------Rent Picture routes-------------------------------------------------
 

@@ -9,6 +9,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from .property import PROPERTY_AVAILABLE,PROPERTY_UNDER_MAINTENANCE,PROPERTY_RENT
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import api_view,permission_classes
+
 
 
 RENT_ACTIVE = "active"
@@ -157,4 +159,17 @@ class RentCreateView(generics.CreateAPIView):
     def perform_update(self,serializer):
         validated_data = serializer.validated_data
         validated_data['updated_at'] = datetime.datetime.now()
-        serializer.save()    
+        serializer.save()
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_staff_rents(request):
+    staff = request.user
+    from ..models import OwnerManager
+    manager_emails = OwnerManager.objects.filter(owner=staff).values_list('manager__email',flat=True)
+    rents = Rent.objects.filter(property_id__property_zone_id__manager_id__email__in=manager_emails)
+    paginator = CustomPagination()
+    paginated_rents = paginator.paginate_queryset(rents, request)
+    serializer = RentSerializer(paginated_rents, many=True)
+    return paginator.get_paginated_response(serializer.data)
+    #return Response({}RentSerializer(rents,many=True).data)    

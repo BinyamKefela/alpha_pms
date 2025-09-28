@@ -26,6 +26,9 @@ class BrokerProfileListView(generics.ListAPIView):
         'license_number':['exact'],
         'user__id':['exact'],
         'user__email':['exact'],
+        'user__first_name':['exact'],
+        'user__middle_name':['exact'],
+        'user__last_name':['exact'],
 
     }
     search_fields = [field.name for field in BrokerProfile._meta.fields]
