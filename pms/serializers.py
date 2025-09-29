@@ -154,6 +154,17 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = "__all__"
 
+class NotificationUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotificationUser
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['user_id'] = UserSerializer(instance.user_id).data
+        representation['notification_id'] = NotificationSerializer(instance.notification_id).data
+        return representation
+
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment

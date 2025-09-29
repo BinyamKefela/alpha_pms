@@ -26,10 +26,12 @@ class NotificationListView(generics.ListAPIView):
     ordering = ['id']
     pagination_class = CustomPagination
     filterset_fields = {
+        'user_id__email':['exact'],
+        'user_id__id':['email'],
         'maintenance_request_id__property_id__property_zone_id__owner_id__email': ['exact'],
         'maintenance_request_id__property_id__property_zone_id__manager_id__email': ['exact'],
-        'payment_id__property_id__property_zone_id__owner_id__email': ['exact'],
-        'payment_id__property_id__property_zone_id__manager_id__email': ['exact'],
+        'payment_id__rent_id__property_id__property_zone_id__owner_id__email': ['exact'],
+        'payment_id__rent_id__property_id__property_zone_id__manager_id__email': ['exact'],
         'rent_id__property_id__property_zone_id__owner_id__email': ['exact'],
         'rent_id__property_id__property_zone_id__manager_id__email': ['exact'],
     }
@@ -81,4 +83,44 @@ class NotificationCreateView(generics.CreateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
-    
+
+
+
+       
+# an API for getting unread notifications of a specific user
+class NotificationUnreadListView(generics.ListAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    filter_backends = [SearchFilter, OrderingFilter]
+    filterset_fields = {
+    #'name': ['exact', 'icontains'],
+    #'zone__zone_owner__email':['exact'],
+    'user_id__email':['exact'],
+    'is_read': ['exact']
+    }
+    search_fields = [field.name for field in Notification._meta.fields]
+    ordering_fields = [field.name for field in Notification._meta.fields]
+    ordering = ['id']
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        id = self.kwargs.get('user_id')
+        #zone = self.kwargs.get('zone_id')
+        
+        queryset = super().get_queryset()
+        if id is not None:
+            try:
+               User.objects.get(id=id)
+               # Filter the queryset based on the primary key
+               queryset = queryset.filter(zone=ParkingZone.objects.filter(zone_owner=user)).exclude(id__in=NotificationUser.objects.filter(user_id=id)
+                                                              .values_list("notification_id",flat=True))  # Assuming your model has an 'id' field
+               return queryset
+            except:
+                raise NotFound(detail="There is no notification with the given ID.")
+        else:
+            # If no 'pk' is provided, return the default queryset (all objects)
+            return queryset 
+
+
+

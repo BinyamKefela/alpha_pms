@@ -38,6 +38,7 @@ class RentalPaymentListView(generics.ListAPIView):
         'paid_at': ['exact','gt','gte','lt','lte'],
         'cycle_start': ['exact','gt','gte','lt','lte'],
         'cycle_end': ['exact','gt','gte','lt','lte'],
+        'status':['exact'],
     }
     
 

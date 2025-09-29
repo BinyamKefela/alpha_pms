@@ -175,6 +175,11 @@ urlpatterns = [
   path("delete_notification/<int:id>",NotificationDestroyView.as_view(),name="delete_notification"),
   path("get_unread_notifications",UnreadNotificationListView.as_view(),name="get_unread_notifications"),
 
+  #path("get_user_unread_notifications/<int:user_id>",NotificationUnreadUserListView.as_view(),name="get_user_unread_notifications"),
+  #path("get_user_unread_notifications/<int:user_id>",NotificationUnreadUserListView.as_view(),name="get_user_unread_notifications"),
+  path("get_unread_notifications/<int:user_id>",NotificationUnreadListView.as_view(),name="get_unread_notifications"),
+
+
 
 
    #---------------------------------subscription routes--------------------------------------------------

@@ -37,6 +37,9 @@ class SalesPaymentListView(generics.ListAPIView):
         'buyer_id__email':['exact'],
         'buyer_id__id':['exact'],
         'property_zone_sale_id__id':['exact'],
+        'due_date':['exact','gt','gte','lt','lte'],
+        'status':['exact'],
+        
                         }
     ordering_fields = [field.name for field in SalesPayment._meta.fields]
     ordering = ['id']
