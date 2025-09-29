@@ -328,5 +328,22 @@ class RentalPaymentSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("paid_at",)
 
+class RentCommissionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RentCommission
+        fields = "__all__"
+
+class SAASTransactionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SAASTransaction
+        fields = "__all__"
+
+class BrokerTransactionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BrokerTransaction
+        fields = "__all__"
 
 

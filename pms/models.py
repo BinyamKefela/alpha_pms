@@ -223,6 +223,7 @@ class Rent(models.Model):
     payment_cycle = models.CharField(max_length=100)
     rent_amount = models.FloatField(null=False)
     deposit_amount = models.FloatField(null=False)
+    broker = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="rent_broker")
     status = models.CharField(max_length=100,null=False)
     created_at = models.DateTimeField(null=True)
     updated_at = models.DateTimeField(null=True)
@@ -438,6 +439,15 @@ class Commission(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class RentCommission(models.Model):
+    rent = models.ForeignKey(Rent,on_delete=models.SET_NULL,null=True,blank=True)
+    saas_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    broker_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class BrokerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="broker_profile")
     license_number = models.CharField(max_length=100)
@@ -536,3 +546,24 @@ class RentalPayment(models.Model):
 
     def __str__(self):
         return f"Payment for {self.rental} ({self.amount})"
+
+
+class SAASTransaction(models.Model):
+    SAAS_TRANSACTION_TYPE_CHOICE = [('sales commission','sales commission'),
+                                    ('rent commission','rent commission')]
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    transaction_type = models.CharField(max_length=200,choices=SAAS_TRANSACTION_TYPE_CHOICE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class BrokerTransaction(models.Model):
+     BROKER_TRANSACTION_TYPE_CHOICE = [('sales commission','sales commission'),
+                                    ('rent commission','rent commission')]
+     amount = models.DecimalField(max_digits=12, decimal_places=2)
+     transaction_type = models.CharField(max_length=200,choices=BROKER_TRANSACTION_TYPE_CHOICE)
+     created_at = models.DateTimeField(auto_now_add=True)
+     updated_at = models.DateTimeField(auto_now=True)
+
+
+   

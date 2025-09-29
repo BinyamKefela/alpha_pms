@@ -30,6 +30,9 @@ from .api.property_zone_picture import *
 from .api.coworkingspace import *
 from .api.workspace_rental import *
 from .api.rental_payment import *
+from .api.rent_commission import *
+from .api.saas_transaction import *
+from .api.broker_transaction import *
 
 
 
@@ -305,4 +308,27 @@ urlpatterns = [
   path('post_rental_payment',RentalPaymentCreateView.as_view(),name='post_rental_payment'),
   path('update_rental_payment/<int:id>',RentalPaymentUpdateView.as_view(),name='update_rental_payment'),
   path('delete_rental_payment/<int:id>',RentalPaymentDestroyView.as_view(),name='delete_rental_payment'),
+
+  #---------------------------------rent commission routes-------------------------------------------------------
+  path('get_rent_commissions',RentCommissionListView.as_view(),name='get_rent_commissions'),
+  path('get_rent_commission/<int:id>',RentCommissionRetrieveView.as_view(),name='get_rent_commission'),
+  path('post_rent_commission',RentCommissionCreateView.as_view(),name='post_rent_commission'),
+  path('update_rent_commission/<int:id>',RentCommissionUpdateView.as_view(),name='update_rent_commission'),
+  path('delete_rent_commission/<int:id>',RentCommissionDestroyView.as_view(),name='delete_rent_commission'),
+
+
+    #---------------------------------saas transaction routes-------------------------------------------------------
+  path('get_saas_transactions',SAASTransactionListView.as_view(),name='get_saas_transactions'),
+  path('get_saas_transaction/<int:id>',SAASTransactionRetrieveView.as_view(),name='get_saas_transaction'),
+  path('post_saas_transaction',SAASTransactionCreateView.as_view(),name='post_saas_transaction'),
+  path('update_saas_transaction/<int:id>',SAASTransactionUpdateView.as_view(),name='update_saas_transaction'),
+  path('delete_saas_transaction/<int:id>',SAASTransactionDestroyView.as_view(),name='delete_saas_transaction'),
+  
+    #---------------------------------saas transaction routes-------------------------------------------------------
+  path('get_broker_transactions',BrokerTransactionListView.as_view(),name='get_broker_transactions'),
+  path('get_broker_transaction/<int:id>',BrokerTransactionRetrieveView.as_view(),name='get_broker_transaction'),
+  path('post_broker_transaction',BrokerTransactionCreateView.as_view(),name='post_broker_transaction'),
+  path('update_broker_transaction/<int:id>',BrokerTransactionUpdateView.as_view(),name='update_broker_transaction'),
+  path('delete_broker_transaction/<int:id>',BrokerTransactionDestroyView.as_view(),name='delete_broker_transaction'),
+
 ]
