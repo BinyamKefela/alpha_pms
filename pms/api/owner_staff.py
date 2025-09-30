@@ -24,7 +24,8 @@ class OwnerStaffListView(generics.ListAPIView):
     permission_classes = []
     filter_backends = [DjangoFilterBackend,SearchFilter, OrderingFilter]
     filterset_fields = {'owner__id': ['exact'],
-                        'property_zone__id': ['exact']}
+                        'property_zone__id': ['exact'],
+                        'created_at':['exact','gt','gte','lt','lte'],}
     search_fields = [field.name for field in OwnerStaff._meta.fields if not isinstance(field, ForeignKey)] 
     ordering_fields = [field.name for field in OwnerStaff._meta.fields if not isinstance(field, ForeignKey)]
     ordering = ['id']

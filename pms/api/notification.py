@@ -124,7 +124,7 @@ class NotificationUnreadListView(generics.ListAPIView):
                     ).values_list('notification_id', flat=True)
                #queryset = queryset.filter(zone=ParkingZone.objects.filter(zone_owner=user)).exclude(id__in=NotificationUser.objects.filter(user_id=id)
                 #                                              .values_list("notification_id",flat=True))  # Assuming your model has an 'id' field
-               queryset = queryset.filter(user_id=id).exclude(id__in=linked_notification_ids)
+               queryset = queryset.filter(user_id=id).exclude(notificationuser__user_id=id)
                return queryset
             except:
                 raise NotFound(detail="There is no user with the given ID.")

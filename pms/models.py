@@ -118,13 +118,15 @@ class OwnerManager(models.Model):
     owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="owner_manager")
     manager = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="manager_manager")
     property_zone = models.ForeignKey("PropertyZone",on_delete=models.SET_NULL,null=True,related_name="property_zone_manager")
-
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
 
 class OwnerStaff(models.Model):
     owner = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="owner_staff")
     staff = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="staff_owner")
     property_zone = models.ForeignKey("PropertyZone",on_delete=models.SET_NULL,null=True,related_name="property_zone_staff")
-
+    created_at = models.DateTimeField(auto_now_add=True,null=True,blank=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True,blank=True)
 
 class PropertyZone(models.Model):
     owner_id = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="property_owner_id")
