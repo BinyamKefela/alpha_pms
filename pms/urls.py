@@ -33,6 +33,7 @@ from .api.rental_payment import *
 from .api.rent_commission import *
 from .api.saas_transaction import *
 from .api.broker_transaction import *
+from .api.notification_user import *
 
 
 
@@ -178,7 +179,8 @@ urlpatterns = [
   #path("get_user_unread_notifications/<int:user_id>",NotificationUnreadUserListView.as_view(),name="get_user_unread_notifications"),
   #path("get_user_unread_notifications/<int:user_id>",NotificationUnreadUserListView.as_view(),name="get_user_unread_notifications"),
   path("get_unread_notifications/<int:user_id>",NotificationUnreadListView.as_view(),name="get_unread_notifications"),
-
+  path("post_notification_user",NotificationUserCreateView.as_view(),name="post_notification_user"),
+  path("get_notification_users",NotificationUserListView.as_view(),name="get_notification_user"),
 
 
 

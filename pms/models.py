@@ -333,6 +333,7 @@ class SubscriptionPayment(models.Model):
     payment_method = models.CharField(max_length=100,null=False)
     amount = models.FloatField(null=False)
     status = models.CharField(max_length=100,null=False)
+    paid_at = models.DateTimeField(null=True,blank=True)
     transaction_id = models.CharField(max_length=100,null=False)
     created_at = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)

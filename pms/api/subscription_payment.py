@@ -19,7 +19,8 @@ class SubscriptionPaymentListView(generics.ListAPIView):
     ordering_fields = [field.name for field in SubscriptionPayment._meta.fields if not isinstance(field, ForeignKey)]
     ordering = ['id']
     filterset_fields = {'subscription_id': ['exact'],
-                        'user_id': ['exact'],}
+                        'user_id': ['exact'],
+                        'paid_at':['exact','gt','gte','lt','lte'],}
     pagination_class = CustomPagination
 
 

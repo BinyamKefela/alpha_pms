@@ -153,7 +153,11 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = "__all__"
-
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['user_id'] = UserSerializer(instance.user_id).data
+        return representation
+    
 class NotificationUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = NotificationUser

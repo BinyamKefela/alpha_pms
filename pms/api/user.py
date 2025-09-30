@@ -71,7 +71,7 @@ class UserDestroyView(generics.DestroyAPIView):
 class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = [IsAuthenticated]
 
 
 
@@ -110,7 +110,7 @@ def setUserPermissions(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def setUserGroups(request):
-    if not request.user.has_perm('pms.change_user'):
+    if (not request.user.has_perm('pms.change_user')) and (not request.user.has_perm('pms.change_customuser')):
         return Response({"message":"you don't have the permission to set user's groups"},status=status.HTTP_403_FORBIDDEN)
     user_id = request.data.get("user_id")
     group_names = request.data.get("groups") 

@@ -23,6 +23,13 @@ class SubscriptionListView(generics.ListAPIView):
     filterset_fields = {'user_id': ['exact'],}
     ordering = ['id']
     pagination_class = CustomPagination
+    filterset_fields = {
+        'user_id__email':['exact'],
+        'user_id__id':['exact'],
+        'start_date':['exact','gt','gte','lt','lte'],
+        'end_date':['exact','gt','gte','lt','lte'],
+        'status':['exact'],
+    }
 
 
 class SubscriptionRetrieveView(generics.RetrieveAPIView):
