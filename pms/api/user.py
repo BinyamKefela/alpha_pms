@@ -142,7 +142,7 @@ def send_password_reset_email(request):
     token = str(refresh.access_token)
 
     current_site = get_current_site(request)
-    dummy_site = "http://localhost:3000/en/reset-password/" + f'{token}'
+    dummy_site = "http://localhost:3000/en/reset-password?" + f'{token}'
     reset_link = f"https://{current_site.domain}/reset-password/{token}"
     
     # Correct HTML message body with proper structure
