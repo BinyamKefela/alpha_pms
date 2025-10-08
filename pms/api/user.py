@@ -573,6 +573,22 @@ def get_staff(request, id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def contact_us(request):
+    full_name = request.data.get('full_name')
+    email = request.data.get('email')
+    subject = request.data.get('subject')
+    message = request.data.get('message')
+    recepient_email = os.getenv('COMPANY_EMAIL')
+
+    if not(full_name or email or subject or message or recepient_email):
+        return Response({"error":"please provide all the fields needed"},status=status.HTTP_400_BAD_REQUEST)
+
+    send_mail(subject=subject,message=message,from_email=email,recipient_list=['jni@gmail.com'])
+
+    return Response({"success":"sent email successfully"},status=status.HTTP_200_OK)
+
 
 
     

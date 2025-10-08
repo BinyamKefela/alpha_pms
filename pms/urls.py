@@ -34,6 +34,7 @@ from .api.rent_commission import *
 from .api.saas_transaction import *
 from .api.broker_transaction import *
 from .api.notification_user import *
+from .api.owner_manager import *
 
 
 
@@ -60,6 +61,8 @@ urlpatterns = [
   path('create_manager', create_manager, name='create_manager'),
   path('delete_manager/<int:id>', delete_manager, name='delete_manager'),
   path('update_manager/<int:id>', update_manager, name='update_manager'),
+
+  path('contact_us',contact_us,name='contact_us'),
 
 
   path('get_staffs', get_staffs, name='get_staffs'),
