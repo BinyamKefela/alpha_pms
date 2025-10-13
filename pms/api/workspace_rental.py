@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.filters import OrderingFilter,SearchFilter
-from ..models import WorkSpaceRental
+from ..models import WorkSpaceRental,CoworkingSpace
 from ..serializers import WorkSpaceRentalSerializer
 from pms.api.custom_pagination import CustomPagination
 import datetime
@@ -72,3 +72,13 @@ class WorkSpaceRentalCreateView(generics.CreateAPIView):
     queryset = WorkSpaceRental.objects.all()
     serializer_class = WorkSpaceRentalSerializer
     permission_classes = [IsAuthenticated, DjangoModelPermissions]
+
+    def create(self, request, *args, **kwargs):
+        space_id = request.data.get('space')
+        try:
+            space = CoworkingSpace.objects.get(id=space_id)
+            if space.capacity< WorkSpaceRental.objects.filter(is_active=True,space=space).count():
+                return Response({"error":"There is no free space in the given workspace"},status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"error":"there is no coworking space with the given coworking space id"},status=status.HTTP_400_BAD_REQUEST)
+        return super().create(request, *args, **kwargs)

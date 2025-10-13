@@ -399,6 +399,24 @@ def sign_up(request):
         return Response({'message': 'Registration successful. Please check your email to verify your account.',"user":UserSerializer(user).data}, status=status.HTTP_201_CREATED)
 
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def verify_email(request, token):
+    try:
+        verification = EmailVerification.objects.get(token=token)
+        user = verification.user
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+            verification.delete()  # Token can be used only once
+            send_mail("verification successful", "Your email has been successfully verified. You can now log in.", EMAIL_HOST_USER, [user.email])
+            return Response({'message': 'Your email has been successfully verified. You can now log in.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Your email has already been verified.'}, status=status.HTTP_200_OK)
+    except EmailVerification.DoesNotExist:
+        return Response({'error': 'Invalid verification link.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @permission_classes(['add_user'])

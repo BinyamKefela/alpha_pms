@@ -57,6 +57,18 @@ urlpatterns = [
   path("get_tenants",GetTenats.as_view(),name="get_tenants"),
   path('sign_up',sign_up, name='sign_up'),
 
+  #path('register',sign_up_zone_owner, name='register'),
+  path('verify-email/<uuid:token>', verify_email, name='verify_email'),
+
+  #path('send_password_reset_email_phone',send_password_reset_email_phone, name='send_password_reset_email_phone'),
+  #path('verify_reset_code', VerifyResetCodeView.as_view(), name='verify_reset_code'),
+  #path('reset_password_phone',reset_password_phone,name='reset_password_phone'),
+
+  #path("change_password",change_password,name="change_password"),
+
+
+
+
   path('get_managers', get_managers, name='get_managers'),
   path('create_manager', create_manager, name='create_manager'),
   path('delete_manager/<int:id>', delete_manager, name='delete_manager'),
@@ -340,5 +352,21 @@ urlpatterns = [
   path('post_broker_transaction',BrokerTransactionCreateView.as_view(),name='post_broker_transaction'),
   path('update_broker_transaction/<int:id>',BrokerTransactionUpdateView.as_view(),name='update_broker_transaction'),
   path('delete_broker_transaction/<int:id>',BrokerTransactionDestroyView.as_view(),name='delete_broker_transaction'),
+
+  #------------------------------------reports------------------------------------------------------------------
+
+  path('get_subscription_report', SubscriptionReportView.as_view(), name='get_subscription_report'),
+  path('get_revenue_report', RevenueReportView.as_view(), name='get_revenue_report'),
+  path('get_user_type_report', UserTypeReportView.as_view(), name='get_user_type_report'),
+  path('export-users', ExportUsersReportView.as_view(), name='export-users'),
+  path("payments-export/", PaymentsExportReportView.as_view(), name="payments-export"),
+
+
+
+
+
+
+
+
 
 ]

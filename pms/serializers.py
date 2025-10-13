@@ -362,3 +362,35 @@ class BrokerTransactionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+
+
+
+class SubscriptionReportSerializer(serializers.Serializer):
+    plans = serializers.ListField(child=serializers.CharField())
+    users = serializers.ListField(child=serializers.IntegerField())
+    revenue = serializers.ListField(child=serializers.FloatField())
+
+
+
+class RevenueReportSerializer(serializers.Serializer):
+    months = serializers.ListField(child=serializers.CharField())
+    rent = serializers.ListField(child=serializers.FloatField())
+    sale = serializers.ListField(child=serializers.FloatField())
+    subscription = serializers.ListField(child=serializers.FloatField())
+    workspace = serializers.ListField(child=serializers.FloatField())
+
+
+class UserTypeReportSerializer(serializers.Serializer):
+    groups = serializers.ListField(child=serializers.CharField())
+    counts = serializers.ListField(child=serializers.IntegerField())
+
+
+class UserExportSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    email = serializers.EmailField()
+    created_at = serializers.DateTimeField(format="%Y-%m-%d")
+
+
+
+
