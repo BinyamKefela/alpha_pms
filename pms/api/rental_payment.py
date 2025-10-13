@@ -28,6 +28,7 @@ class RentalPaymentListView(generics.ListAPIView):
     pagination_class = CustomPagination
     filterset_fields = {
         'rental__space__zone__owner_id__email': ['exact'],
+        'rental__id':['exact'],
         'rental__space__zone__owner_id__id': ['exact'],
         'rental__space__zone__manager_id__email': ['exact'],
         'rental__space__zone__manager_id__id': ['exact'],
