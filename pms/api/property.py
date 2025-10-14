@@ -31,6 +31,7 @@ class PropertyListView(generics.ListAPIView):
         'property_zone_id__manager_id__id':['exact'],
         'status':['exact'],
         'property_zone_id': ['exact'],
+        'property_type': ['exact'],
     }
 
     def get_queryset(self):

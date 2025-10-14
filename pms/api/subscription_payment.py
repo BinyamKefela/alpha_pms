@@ -20,7 +20,8 @@ class SubscriptionPaymentListView(generics.ListAPIView):
     ordering = ['id']
     filterset_fields = {'subscription_id': ['exact'],
                         'user_id': ['exact'],
-                        'paid_at':['exact','gt','gte','lt','lte'],}
+                        'paid_at':['exact','gt','gte','lt','lte'],
+                        'payment_method':['exact'],}
     pagination_class = CustomPagination
 
 
