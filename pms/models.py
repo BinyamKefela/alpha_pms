@@ -93,7 +93,7 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
         return self.email
 
     class Meta:
-        db_table = "user"
+        #db_table = "user"
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 
