@@ -38,7 +38,8 @@ class PropertyZoneSaleListView(generics.ListAPIView):
                         'property_zone_id__id':['exact'],
                         'property_id__property_zone_id__id':['exact'],
                         'property_id__owner_id__id':['exact'],
-                        'property_id__manager_id__id':['exact'],}
+                        'property_id__manager_id__id':['exact'],
+                        'status':['exact'],}
 
     search_fields = [field.name for field in PropertyZoneSale._meta.fields if not isinstance(field, ForeignKey)] 
     ordering_fields = [field.name for field in PropertyZoneSale._meta.fields if not isinstance(field, ForeignKey)]
@@ -88,7 +89,7 @@ class PropertyZoneSaleUpdateView(generics.UpdateAPIView):
         validate_data = serializer.validated_data
         validate_data["updated_at"] = datetime.datetime.now()
         serializer.save()
-        #return super().update(request, *args, **kwargs)
+        return super().update(request, *args, **kwargs)
 
 
 class PropertyZoneSaleDestroyView(generics.DestroyAPIView):
