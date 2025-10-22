@@ -542,7 +542,7 @@ class RentalPayment(models.Model):
     payment_method = models.CharField(max_length=100)
     transaction_id = models.CharField(max_length=100,null=True,blank=True)
     paid_at = models.DateTimeField(auto_now_add=True)
-    cycle_start = models.DateField()
+    cycle_start = models.DateField(null=True,blank=True)
     cycle_end = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
