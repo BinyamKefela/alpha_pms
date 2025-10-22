@@ -40,4 +40,7 @@ RUN uv pip install -r requirements.txt --system
 
 EXPOSE 8000
 
-CMD ["./entrypoint.sh"]
+#make entrypoint executable
+RUN chmod +x /entrypoint.prod.sh
+
+CMD ["./entrypoint.prod.sh"]
