@@ -9,7 +9,7 @@ services:
     depends_on:
       db:
           condition: service_healthy
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
   db:
@@ -29,6 +29,7 @@ services:
       start_period: 30s
     env_file:
       - .env  
+    restart: unless-stopped
 
 volumes:
     postgres_db:
