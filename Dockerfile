@@ -36,4 +36,4 @@ RUN chmod +x /entrypoint.prod.sh
 
 EXPOSE 8000
 
-CMD ["./entrypoint.prod.sh"]
+CMD ["/entrypoint.prod.sh"]
