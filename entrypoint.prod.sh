@@ -1,3 +1,11 @@
+#!/bin/bash
+
+# entrypoint.prod.sh
+echo "Applying database migrations..."
+python manage.py migrate --noinput
+
+echo "Collecting static files..."
 python manage.py collectstatic --noinput
-python manage.py migrate 
-python -m gunicorn --bin 0.0.0.0:8000 --workers 3 alphapms.wsgi.py
+
+echo "Starting Gunicorn server..."
+gunicorn alpha_pms.wsgi:application --bind 0.0.0.0:8000
