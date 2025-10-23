@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-)s3$xaaa26!90m@!!950+^h3jnsect7_s7vs-6@2__xxywrd%8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.0.179","localhost",'127.0.0.1','alphapms.sunriseworld.org','www.alphapms.sunriseworld.org','localhost:5173','10.195.49.21','10.195.49.19']
+ALLOWED_HOSTS = ["78.47.138.239","192.168.0.179","localhost",'127.0.0.1','alphapms.sunriseworld.org','www.alphapms.sunriseworld.org','localhost:5173','10.195.49.21','10.195.49.19']
 
 CORS_ALLOW_ALL_ORIGINS = True
 
