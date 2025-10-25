@@ -30,7 +30,7 @@ PropertyZoneSale_YEARLY_CYCLE = "yearly"
 class PropertyZoneSaleListView(generics.ListAPIView):
     queryset = PropertyZoneSale.objects.all()
     serializer_class = PropertyZoneSaleSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     filter_backends = [SearchFilter, OrderingFilter,DjangoFilterBackend]
     filterset_fields = {'broker__id': ['exact'],
                         #'buyer__id': ['exact'],
@@ -74,7 +74,7 @@ class PropertyZoneSaleListView(generics.ListAPIView):
 class PropertyZoneSaleRetrieveView(generics.RetrieveAPIView):
     queryset = PropertyZoneSale.objects.all()
     serializer_class = PropertyZoneSaleSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     lookup_field = 'id'
 
 

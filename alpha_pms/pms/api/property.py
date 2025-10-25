@@ -17,7 +17,7 @@ PROPERTY_UNDER_MAINTENANCE = "under_maintenance"
 class PropertyListView(generics.ListAPIView):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     filter_backends = [SearchFilter, OrderingFilter,DjangoFilterBackend]
     search_fields = ["name","property_type","address","city","state"]
     ordering_fields = [field.name for field in Property._meta.fields]
@@ -51,7 +51,7 @@ class PropertyListView(generics.ListAPIView):
 class PropertyRetrieveView(generics.RetrieveAPIView):
     queryset = Property.objects.all()
     serializer_class = PropertySerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     lookup_field = 'id'
 
 

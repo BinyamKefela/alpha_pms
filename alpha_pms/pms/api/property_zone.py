@@ -14,7 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 class PropertyZoneListView(generics.ListAPIView):
     queryset = PropertyZone.objects.all()
     serializer_class = PropertyZoneSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     filter_backends = [SearchFilter, OrderingFilter,DjangoFilterBackend]
     search_fields = ["name", "address", "city", "state"]
     ordering_fields = [field.name for field in PropertyZone._meta.fields]
@@ -34,7 +34,7 @@ class PropertyZoneListView(generics.ListAPIView):
 class PropertyZoneRetrieveView(generics.RetrieveAPIView):
     queryset = PropertyZone.objects.all()
     serializer_class = PropertyZoneSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     lookup_field = 'id'
 
 
