@@ -12,7 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 class PropertyPictureListView(generics.ListAPIView):
     queryset = PropertyPicture.objects.all()
     serializer_class = PropertyPictureSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     filter_backends = [SearchFilter, OrderingFilter,DjangoFilterBackend]
     search_fields = [field.name for field in PropertyPicture._meta.fields]
     ordering_fields = [field.name for field in PropertyPicture._meta.fields]
@@ -26,7 +26,7 @@ class PropertyPictureListView(generics.ListAPIView):
 class PropertyPictureRetrieveView(generics.RetrieveAPIView):
     queryset = PropertyPicture.objects.all()
     serializer_class = PropertyPictureSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    permission_classes = []
     lookup_field = 'id'
 
 

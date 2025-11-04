@@ -135,7 +135,9 @@ class PropertyZone(models.Model):
     address = models.CharField(max_length=100,null=False)
     city = models.CharField(max_length=100,null=False)
     state = models.CharField(max_length=100,null=False)
-    created_at = models.DateTimeField(auto_now_add=True) 
+    latlong = models.CharField(max_length=500,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
 
     class Meta:
         db_table = "property_zone"
@@ -436,16 +438,16 @@ class SalesPayment(models.Model):
 
 class Commission(models.Model):
     property_sale = models.ForeignKey(SalesPayment,on_delete=models.CASCADE)
-    saas_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    broker_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saas_commission = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    broker_commission = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     total_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class RentCommission(models.Model):
     rent = models.ForeignKey(Rent,on_delete=models.SET_NULL,null=True,blank=True)
-    saas_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    broker_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saas_commission = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    broker_commission = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     total_commission = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
