@@ -126,6 +126,8 @@ class PropertyZoneSaleCreateView(generics.CreateAPIView):
 @permission_classes([AllowAny])
 def sell_property(request):
     with transaction.atomic():
+      if request.data.get("property_id") is None and request.data.get("property_zone_id") is None:
+            return Response({"error":"please provide either property id or property zone id"},status=status.HTTP_400_BAD_REQUEST)
       serializer = PropertyZoneSaleSerializer(data=request.data)
       if serializer.is_valid():
           validated_data = serializer.validated_data
@@ -135,12 +137,19 @@ def sell_property(request):
           except:
               return Response({"error":"There is no property with the given property id"},status.HTTP_404_NOT_FOUND)'''
           try:
-              property_zone = PropertyZone.objects.get(pk=int(request.data.get("property_zone_id")))
-              property_zone.owner_id = request.data.get("buyer_id")
-              property_zone.save()
+              if request.data.get("property_id"):
+                  property = Property.objects.get(pk=int(request.data.get("property_id")))
+                  property.owner_id = request.data.get("buyer_id")
+                  property.save()
+              elif request.data.get("property_zone_id"):
+                  property_zone = PropertyZone.objects.get(pk=int(request.data.get("property_zone_id")))
+                  property_zone.owner_id = request.data.get("buyer_id")
+                  property_zone.save()
               
           except:
-              return Response({"error":"there is no property with the given property id"},status=status.HTTP_400_BAD_REQUEST)
+              if request.data.get("property_id"):
+                  return Response({"error":"there is no property with the given property id"},status=status.HTTP_400_BAD_REQUEST)
+              return Response({"error":"there is no property with the given property zone id"},status=status.HTTP_400_BAD_REQUEST)
           property_zone_sale = serializer.save(status=PropertyZoneSale.PROPERTY_SALE_STATUS_CHOICES[1][0])
           if request.data.get("broker_id"):
               property_zone_sale.broker = request.data.get("broker_id")
