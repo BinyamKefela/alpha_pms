@@ -255,7 +255,8 @@ urlpatterns = [
    path('get_sales_payment/<int:id>', SalesPaymentRetrieveView.as_view()),
    path('update_sales_payments/<int:id>', SalesPaymentUpdateView.as_view()),
    path('delete_sales_payment/<int:id>', SalesPaymentDestroyView.as_view()),
-
+   path('create_property_sale_listing', create_property_sale_listing, name='create_property_sale_listing'),
+   path('sell_property', sell_property, name='sell_property'),
 
      #---------------------------------Plan routes-------------------------------------------------------
 

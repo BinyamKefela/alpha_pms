@@ -195,7 +195,11 @@ def create_property_sale_listing(request):
     property_zone_id = request.data.get("property_zone_id")
     #broker = request.data.get("broker_id")
     listing_price = request.data.get("listing_price")
-
+    
+    if PropertyZoneSale.objects.filter(property_id=property_id,status=PropertyZoneSale.PROPERTY_SALE_STATUS_CHOICES[0][0]).exists():
+        return Response({"error":"There is already an active sale listing for this property"},status=status.HTTP_400_BAD_REQUEST)
+    if PropertyZoneSale.objects.filter(property_zone_id=property_zone_id,status=PropertyZoneSale.PROPERTY_SALE_STATUS_CHOICES[0][0]).exists():
+        return Response({"error":"There is already an active sale listing for this property zone"},status=status.HTTP_400_BAD_REQUEST)
     if not (property_id or property_zone_id):
         return Response({"error":"please provide either property or property zone to be sold"},status=status.HTTP_400_BAD_REQUEST)
     
@@ -204,11 +208,17 @@ def create_property_sale_listing(request):
     
     property_zone_sale = PropertyZoneSale()
     if property_id:
-        property_zone_sale.property_id = property_id
+        try:
+            property_zone_sale.property_id = Property.objects.get(id=property_id)
+        except Property.DoesNotExist:
+            return Response({"error":"Property not found"},status=status.HTTP_404_NOT_FOUND)
     else:
-        property_zone_sale.property_zone_id = property_zone_id
+        try:
+            property_zone_sale.property_zone_id = PropertyZone.objects.get(id=property_zone_id)
+        except PropertyZone.DoesNotExist:
+            return Response({"error":"Property Zone not found"},status=status.HTTP_404_NOT_FOUND)
     property_zone_sale.listing_price = listing_price
-    property_zone_sale.status = PropertyZoneSale.PROPERTY_SALE_STATUS_CHOICES[0]
+    property_zone_sale.status = PropertyZoneSale.PROPERTY_SALE_STATUS_CHOICES[0][1]
     
     property_zone_sale.save()
     return Response({"message":"successfully created sales listing"},status=status.HTTP_201_CREATED)
