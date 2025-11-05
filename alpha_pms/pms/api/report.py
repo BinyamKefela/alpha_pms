@@ -156,8 +156,8 @@ class RevenueReportView(APIView):
         workspace_filters = {}
         if start_date and end_date:
             workspace_filters["created_at__range"] = [start_date, end_date]
-        if request.query_params.get("space__zone__owner_id__id"):
-            workspace_filters["space__zone__owner_id__id"] = request.query_params.get("space__zone__owner_id__id")
+        if request.query_params.get("rental__space__zone__owner_id__id"):
+            workspace_filters["rental__space__zone__owner_id__id"] = request.query_params.get("rental__space__zone__owner_id__id")
 
         #  Workspace (coworking) payments
         workspace_data = (
