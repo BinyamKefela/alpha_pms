@@ -104,13 +104,19 @@ class RevenueReportView(APIView):
     def get(self, request):
         start_date = parse_date(request.query_params.get('start_date'))
         end_date = parse_date(request.query_params.get('end_date'))
+        
+        
 
         # Base queryset filters
         filters = {}
         if start_date and end_date:
             filters["created_at__range"] = [start_date, end_date]
+        if request.query_params.get("rent_id__property_id__property_zone_id__owner_id__id"):
+            filters["rent_id__property_id__property_zone_id__owner_id__email"] = request.query_params.get("rent_id__property_id__property_zone_id__owner_id__email")
+        if request.query_params.get("rent_id__property_id__property_zone_id__manager_id__id"):
+            filters["rent_id__property_id__property_zone_id__manager_id__email"] = request.query_params.get("rent_id__property_id__property_zone_id__manager_id__email")
 
-        # 1️⃣ Rent payments
+        # 1️ Rent payments
         rent_data = (
             Payment.objects.filter(status="complete", **filters)
             .annotate(month=TruncMonth("created_at"))
@@ -118,28 +124,44 @@ class RevenueReportView(APIView):
             .annotate(total=Sum("amount"))
             .order_by("month")
         )
-
-        # 2️⃣ Sales payments
+        
+        sales_filters = {}
+        if start_date and end_date:
+            sales_filters["created_at__range"] = [start_date, end_date]
+        if request.query_params.get("property_zone_sale_id__property_zone_id__owner_id__id"):
+            sales_filters["property_zone_sale_id__property_zone_id__owner_id__id"] = request.query_params.get("property_zone_sale_id__property_zone_id__owner_id__id")
+        #  Sales payments
         sale_data = (
-            SalesPayment.objects.filter(status="complete", **filters)
+            SalesPayment.objects.filter(status="complete", **sales_filters)
             .annotate(month=TruncMonth("created_at"))
             .values("month")
             .annotate(total=Sum("amount"))
             .order_by("month")
         )
-
-        # 3️⃣ Subscription payments
+        
+        subscription_filters = {}
+        if start_date and end_date:
+            subscription_filters["created_at__range"] = [start_date, end_date]
+        if request.query_params.get("subscription_id__user_id__id"):
+            subscription_filters["subscription_id__user_id__id"] = request.query_params.get("subscription_id__user_id__id")
+        #  Subscription payments
         subscription_data = (
-            SubscriptionPayment.objects.filter(status="complete", **filters)
+            SubscriptionPayment.objects.filter(status="complete", **subscription_filters)
             .annotate(month=TruncMonth("created_at"))
             .values("month")
             .annotate(total=Sum("amount"))
             .order_by("month")
         )
+        
+        workspace_filters = {}
+        if start_date and end_date:
+            workspace_filters["created_at__range"] = [start_date, end_date]
+        if request.query_params.get("space__zone__owner_id__id"):
+            workspace_filters["space__zone__owner_id__id"] = request.query_params.get("space__zone__owner_id__id")
 
-        # 4️⃣ Workspace (coworking) payments
+        #  Workspace (coworking) payments
         workspace_data = (
-            RentalPayment.objects.filter(status="complete", **filters)
+            RentalPayment.objects.filter(status="complete", **workspace_filters)
             .annotate(month=TruncMonth("created_at"))
             .values("month")
             .annotate(total=Sum("amount"))
@@ -319,7 +341,7 @@ class PaymentsExportReportView(APIView):
             filters["created_at__range"] = [start_date, end_date]
 
         # -------------------------------
-        # 1️⃣ Subscription Payments
+        # 1️ Subscription Payments
         # -------------------------------
         subscription_qs = SubscriptionPayment.objects.filter(**filters)
         subscription_data = [
@@ -333,7 +355,7 @@ class PaymentsExportReportView(APIView):
         ]
 
         # -------------------------------
-        # 2️⃣ Sales Payments
+        # 2️ Sales Payments
         # -------------------------------
         sales_qs = SalesPayment.objects.filter(**filters)
         sales_data = [
@@ -347,7 +369,7 @@ class PaymentsExportReportView(APIView):
         ]
 
         # -------------------------------
-        # 3️⃣ Rent Payments
+        # 3️ Rent Payments
         # -------------------------------
         rent_qs = Payment.objects.filter(**filters)
         rent_data = [
@@ -361,7 +383,7 @@ class PaymentsExportReportView(APIView):
         ]
 
         # -------------------------------
-        # 4️⃣ Workspace (Coworking) Rental Payments
+        #  Workspace (Coworking) Rental Payments
         # -------------------------------
         rental_qs = RentalPayment.objects.filter(**filters)
         rental_data = [
@@ -382,7 +404,7 @@ class PaymentsExportReportView(APIView):
         ]
 
         # -------------------------------
-        # 5️⃣ Chart Summary
+        # 5 Chart Summary
         # -------------------------------
         chart_labels = ["Subscription", "Sales", "Rent", "Workspace"]
         chart_series = [
