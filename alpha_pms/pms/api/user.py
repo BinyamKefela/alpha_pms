@@ -419,15 +419,28 @@ def verify_email(request, token):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-@permission_classes(['add_user'])
 def create_manager(request):
-    if not request.user.has_perm('add_user'):
-        return Response({"message":"you don't have the permission to create a user"},status=status.HTTP_403_FORBIDDEN)
+    #if not request.user.has_perm('add_user'):
+    #   return Response({"message":"you don't have the permission to create a user"},status=status.HTTP_403_FORBIDDEN)
     if not request.user.groups.filter(name="owner").exists():
         return Response({"message":"you must be an owner to create a new manager"},status=status.HTTP_403_FORBIDDEN)
     serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
+    user=User()
+    user.email = request.data.get("email")
+    user.is_active=True
+    if request.data.get("phone_number"):
+               user.phone_number = request.data.get("phone_number")
+    if request.data.get("first_name"):
+               user.first_name = request.data.get("first_name")
+    if request.data.get("middle_name"):
+               user.middle_name = request.data.get("middle_name")
+    if request.data.get("last_name"):
+               user.last_name = request.data.get("last_name")
+    user.set_password(request.data.get("password"))
+    user.save()
+    #user.groups.set(Group.objects.filter(name="owner"))
+    if True:
+        #user = serializer.save()
         user.groups.set(Group.objects.filter(name="manager"))
         owner_manager_serializer = OwnerManagerSerializer(data={
             "owner": request.user.id,
@@ -508,13 +521,25 @@ def get_manager(request, id):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_staff(request):
-    if not request.user.has_perm('pms.add_user'):
-        return Response({"message":"you don't have the permission to create a user"},status=status.HTTP_403_FORBIDDEN)
+    #if not request.user.has_perm('pms.add_user'):
+    #   return Response({"message":"you don't have the permission to create a user"},status=status.HTTP_403_FORBIDDEN)
     if not request.user.groups.filter(name="owner").exists():
         return Response({"message":"you must be an owner to create a new staff"},status=status.HTTP_403_FORBIDDEN)
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
+    user=User()
+    user.email = request.data.get("email")
+    user.is_active=True
+    if request.data.get("phone_number"):
+               user.phone_number = request.data.get("phone_number")
+    if request.data.get("first_name"):
+               user.first_name = request.data.get("first_name")
+    if request.data.get("middle_name"):
+               user.middle_name = request.data.get("middle_name")
+    if request.data.get("last_name"):
+               user.last_name = request.data.get("last_name")
+    user.set_password(request.data.get("password"))
+    user.save()
+    if True:
+        #user = serializer.save()
         user.groups.set(Group.objects.filter(name="staff"))
         owner_staff_serializer = OwnerStaffSerializer(data={
             "owner": request.user.id,
