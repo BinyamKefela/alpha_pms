@@ -422,8 +422,8 @@ def verify_email(request, token):
 def create_manager(request):
     #if not request.user.has_perm('add_user'):
     #   return Response({"message":"you don't have the permission to create a user"},status=status.HTTP_403_FORBIDDEN)
-    if not request.user.groups.filter(name="owner").exists():
-        return Response({"message":"you must be an owner to create a new manager"},status=status.HTTP_403_FORBIDDEN)
+    if not request.user.groups.filter(name="staff").exists():
+        return Response({"message":"you must be a staff to create a new manager"},status=status.HTTP_403_FORBIDDEN)
     serializer = UserSerializer(data=request.data)
     user=User()
     user.email = request.data.get("email")
@@ -438,21 +438,16 @@ def create_manager(request):
                user.last_name = request.data.get("last_name")
     user.set_password(request.data.get("password"))
     user.save()
+    user.groups.set(Group.objects.filter(name="manager"))
+
+    owner_manager = OwnerManager()
+    owner_manager.owner = request.user
+    owner_manager.manager = user
+    owner_manager.property_zone = PropertyZone.objects.get(id=request.data.get("property_zone"))
+    owner_manager.save()
     #user.groups.set(Group.objects.filter(name="owner"))
-    if True:
-        #user = serializer.save()
-        user.groups.set(Group.objects.filter(name="manager"))
-        owner_manager_serializer = OwnerManagerSerializer(data={
-            "owner": request.user.id,
-            "manager": user.id,
-            "property_zone": request.data.get("property_zone")
-        })
-        if owner_manager_serializer.is_valid():
-            owner_manager_serializer.save()
-        else:
-            return Response(owner_manager_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message":"manager created successfully!"},status=status.HTTP_201_CREATED)
-    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message":"manager created successfully!"},status=status.HTTP_201_CREATED)
+    #return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
@@ -538,20 +533,15 @@ def create_staff(request):
                user.last_name = request.data.get("last_name")
     user.set_password(request.data.get("password"))
     user.save()
-    if True:
-        #user = serializer.save()
-        user.groups.set(Group.objects.filter(name="staff"))
-        owner_staff_serializer = OwnerStaffSerializer(data={
-            "owner": request.user.id,
-            "staff": user.id,
-            "property_zone": request.data.get("property_zone")
-        })
-        if owner_staff_serializer.is_valid():
-            owner_staff_serializer.save()
-        else:
-            return Response(owner_staff_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"message":"staff created successfully!"},status=status.HTTP_201_CREATED)
-    return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    user.groups.set(Group.objects.filter(name="staff"))
+    owner_staff = OwnerStaff()
+    owner_staff.owner = request.user
+    owner_staff.staff = user
+    owner_staff.property_zone = PropertyZone.objects.get(id=request.data.get("property_zone"))
+    owner_staff.save()
+    
+    return Response({"message":"staff created successfully!"},status=status.HTTP_201_CREATED)
+    #return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
 

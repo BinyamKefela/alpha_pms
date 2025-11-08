@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.filters import OrderingFilter,SearchFilter
-from ..models import PropertyZone, PropertyZoneSale,Property,Notification
+from ..models import PropertyZone, PropertyZoneSale,Property,Notification, SalesPayment
 from ..serializers import PropertyZoneSaleSerializer
 from pms.api.custom_pagination import CustomPagination
 import datetime
@@ -16,6 +16,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from django.db import transaction
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 
@@ -126,6 +128,92 @@ class PropertyZoneSaleCreateView(generics.CreateAPIView):
 @permission_classes([AllowAny])
 def sell_property(request):
     with transaction.atomic():
+        if not request.data.get("property_zone_sale_id"):
+            return Response({"error":"please provide property zone sale id"},status=status.HTTP_400_BAD_REQUEST)
+        if not request.data.get("selling_price"):
+            return Response({"error":"please provide selling price"},status=status.HTTP_400_BAD_REQUEST)
+        if not request.data.get("buyer_id"):
+            return Response({"error":"please provide the buyer id"})
+        user = User.objects.get(id=request.data.get("buyer_id"))
+        if not user.groups.filter(name="owner").exists():
+            return Response({"error":"the buyer must be an owner"},status=status.HTTP_400_BAD_REQUEST)
+        if not request.data.get("payment_method"):
+            return Response({"error":"please provide the payment_method"})
+        if not request.data.get("transaction_id"):
+            return Response({"error":"please provide the transaction id"})
+        sales_payment = SalesPayment()
+        try:
+            sales_payment.property_zone_sale_id = PropertyZoneSale.objects.get(id=request.data.get("property_zone_sale_id"))
+        except:
+            return Response({"error":"There is no property zone sale with the given property zone sale id"},status=status.HTTP_400_BAD_REQUEST)
+        try:
+            sales_payment.buyer_id = User.objects.get(id=request.data.get("buyer_id"))
+        except:
+             return Response({"error":"There is no user with the given buyer id"},status=status.HTTP_400_BAD_REQUEST)
+        sales_payment.amount = request.data.get("selling_price") 
+        if request.data.get("due_date"):
+            sales_payment.due_date = request.data.get("due_date") 
+        sales_payment.status = SalesPayment.SALES_PAYMENT_CHOICES[1][0]
+        sales_payment.payment_method = request.data.get("payment_method")
+        sales_payment.transaction_id = request.data.get("transaction_id")
+        sales_payment.save()
+        
+        
+        from ..models import SAASTransaction,BrokerTransaction,Commission
+        Commission = Commission.objects.first()
+        property_zone_sale = PropertyZoneSale.objects.get(id=request.data.get("property_zone_sale_id"))
+
+        saas_commission_rate = Commission.saas_commission if Commission else 0.00
+        saas_transaction = SAASTransaction.objects.create(
+              #user_id=request.user.id,
+              transaction_type=SAASTransaction.SAAS_TRANSACTION_TYPE_CHOICE[0][0],
+              amount=sales_payment.amount * saas_commission_rate / 100,
+              #created_at=datetime.datetime.now()
+          )
+        broker_commission_rate = Commission.broker_commission if Commission else 0.00
+        if property_zone_sale.broker:
+              broker_transaction = BrokerTransaction.objects.create(
+                  #broker_id=property_zone_sale.broker.id,
+                  #property_sale_id=property_zone_sale.id,
+                  amount=sales_payment.amount * broker_commission_rate / 100,
+                  transaction_type=BrokerTransaction.BROKER_TRANSACTION_TYPE_CHOICE[0][0],
+                  #created_at=datetime.datetime.now()
+              )
+        property_zone_sale.status = PropertyZoneSale.PROPERTY_SALE_STATUS_CHOICES[1][0]
+        property_zone_sale.selling_price = request.data.get("selling_price")
+        property_zone_sale.save()
+        
+        try:
+         if property_zone_sale.property_id:
+            property = property_zone_sale.property_id
+            property.owner_id = User.objects.get(id=request.data.get("buyer_id"))
+            property.save()
+         elif property_zone_sale.property_zone_id:
+            property_zone = property_zone_sale.property_zone_id
+            property_zone.owner_id = User.objects.get(id=request.data.get("buyer_id"))
+            property_zone.save()
+        except Exception as e:
+            return Response(str(e),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+          
+            
+          
+
+        '''notification = Notification()
+        notification.user_id = request.user
+        notification.notification_type = "property sold"
+        notification.message = "A new property sale created for user "+str(PropertyZoneSale.seller.email)
+        notification.is_read=False
+        notification.property_sale_id = PropertyZoneSale
+        notification.created_at = datetime.datetime.now() 
+        notification.save()'''
+    return Response({"message":"property selling complete!"},status=status.HTTP_200_OK)
+
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def sell_property_old(request):
+    with transaction.atomic():
       if request.data.get("property_id") is None and request.data.get("property_zone_id") is None:
             return Response({"error":"please provide either property id or property zone id"},status=status.HTTP_400_BAD_REQUEST)
       serializer = PropertyZoneSaleSerializer(data=request.data)
@@ -139,11 +227,11 @@ def sell_property(request):
           try:
               if request.data.get("property_id"):
                   property = Property.objects.get(pk=int(request.data.get("property_id")))
-                  property.owner_id = request.data.get("buyer_id")
+                  property.owner_id = User.objects.get(id=request.data.get("buyer_id"))
                   property.save()
               elif request.data.get("property_zone_id"):
                   property_zone = PropertyZone.objects.get(pk=int(request.data.get("property_zone_id")))
-                  property_zone.owner_id = request.data.get("buyer_id")
+                  property_zone.owner_id = User.objects.get(id=request.data.get("buyer_id"))
                   property_zone.save()
               
           except:
@@ -152,7 +240,7 @@ def sell_property(request):
               return Response({"error":"there is no property with the given property zone id"},status=status.HTTP_400_BAD_REQUEST)
           property_zone_sale = serializer.save(status=PropertyZoneSale.PROPERTY_SALE_STATUS_CHOICES[1][0])
           if request.data.get("broker_id"):
-              property_zone_sale.broker = request.data.get("broker_id")
+              property_zone_sale.broker = User.objects.get(id=request.data.get("broker_id")) 
               property_zone_sale.save()
           property_zone_sale.selling_price = request.data.get("selling_price")
           from ..models import SAASTransaction,BrokerTransaction,Commission
@@ -160,7 +248,7 @@ def sell_property(request):
           saas_commission_rate = Commission.saas_commission if Commission else 0.00
           saas_transaction = SAASTransaction.objects.create(
               user_id=request.user.id,
-              property_sale_id=property_zone_sale.id,
+              transaction_type=property_zone_sale.id,
               amount=property_zone_sale.selling_price * saas_commission_rate / 100,
               created_at=datetime.datetime.now()
           )
@@ -172,6 +260,8 @@ def sell_property(request):
                   amount=property_zone_sale.selling_price * broker_commission_rate / 100,
                   created_at=datetime.datetime.now()
               )
+              
+            
           
 
           notification = Notification()
