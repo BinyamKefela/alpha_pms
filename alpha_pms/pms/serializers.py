@@ -301,6 +301,11 @@ class PropertyZonePictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyZonePicture
         fields = "__all__"
+        
+class SalesPaymentPictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SalesPaymentPicture
+        fields = "__all__"
 
 
 from rest_framework import serializers

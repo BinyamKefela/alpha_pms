@@ -35,6 +35,7 @@ from .api.saas_transaction import *
 from .api.broker_transaction import *
 from .api.notification_user import *
 from .api.owner_manager import *
+from .api.sales_payment_picture import *
 
 
 
@@ -309,6 +310,15 @@ urlpatterns = [
   path("post_property_zone_picture",PropertyZonePictureCreateView.as_view(),name="post_property_zone_picture"),
   path("update_property_zone_picture/<int:id>",PropertyZonePictureUpdateView.as_view(),name="update_property_zone_picture"),
   path("delete_property_zone_picture/<int:id>",PropertyZonePictureDestroyView.as_view(),name="delete_property_zone_picture"),
+
+
+#---------------------------------  sales payment Picture routes--------------------------------------------
+
+  path("get_sales_payment_pictures", SalesPaymentPictureListView.as_view(), name="get_property_pictures"),
+  path("get_sales_payment_picture/<int:id>",SalesPaymentPictureRetrieveView.as_view(),name='get_property_picture'),
+  path("post_sales_payment_picture",SalesPaymentPictureCreateView.as_view(),name="post_property_picture"),
+  path("update_sales_payment_picture/<int:id>",SalesPaymentPictureUpdateView.as_view(),name="update_property_picture"),
+  path("delete_sales_payment_picture/<int:id>",SalesPaymentPictureDestroyView.as_view(),name="delete_property_picture"),
 
 
   #---------------------------------Coworking Space routes------------------------------------------------------

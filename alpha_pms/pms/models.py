@@ -135,7 +135,8 @@ class PropertyZone(models.Model):
     address = models.CharField(max_length=100,null=False)
     city = models.CharField(max_length=100,null=False)
     state = models.CharField(max_length=100,null=False)
-    latlong = models.CharField(max_length=500,null=True)
+    latitude = models.CharField(max_length=500,null=True)
+    longitude = models.CharField(max_length=500,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True) 
 
@@ -434,6 +435,27 @@ class SalesPayment(models.Model):
 
     class Meta:
         db_table = "sale_payment"
+        
+
+def get_zone_sale_upload_path(instance,filename):
+    ext = filename.split('.')[-1]
+    new_file_name = "sales_payment/"+f'{filename}'
+    return new_file_name
+
+
+class SalesPaymentPicture(models.Model):
+    sales_payment = models.ForeignKey(SalesPayment,on_delete=models.SET_NULL,null=True,related_name="sales_payment_pictures")
+    description = models.CharField(max_length=200,null=True)
+    image = models.FileField(upload_to=get_zone_sale_upload_path,validators=[validate_uploaded_image_extension],null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+        
+    def delete(self, *args, **kwargs):
+        if self.property_image:
+            if os.path.isfile(self.property_image.path):
+                os.remove(self.property_image.path)
+        return super().delete(*args, **kwargs)
+
 
 
 class Commission(models.Model):
