@@ -43,6 +43,8 @@ class PaymentListView(generics.ListAPIView):
         'rent_id__property_id__property_zone_id__manager_id__email': ['exact'],
         'due_date':['exact','gt','gte','lt','lte'],
         'rent_id':['exact'],
+        'user_id__email':['exact'],
+        'user_id':['exact'],
         'payment_method':['exact'],
         'status':['exact'],
     }

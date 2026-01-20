@@ -33,6 +33,8 @@ class RentListView(generics.ListAPIView):
     filterset_fields = {
         'property_id__property_zone_id__owner_id__email': ['exact'],
         'property_id__property_zone_id__manager_id__email': ['exact'],
+        'user_id__email':['exact'],
+        'user_id':['exact'],
     }
 
     def get_queryset(self):

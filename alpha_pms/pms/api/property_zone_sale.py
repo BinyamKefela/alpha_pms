@@ -42,7 +42,12 @@ class PropertyZoneSaleListView(generics.ListAPIView):
                         'property_id__property_zone_id__id':['exact'],
                         'property_id__owner_id__id':['exact'],
                         'property_id__manager_id__id':['exact'],
-                        'status':['exact'],}
+                        'status':['exact'],
+                        'listing_price':['exact','gt','gte','lt','lte'],
+                        'property_id__city':['exact','icontains'],
+                        'property_id__address':['exact','icontains'],
+                        'property_id__state':['exact','icontains'],
+                        }
 
     search_fields = [field.name for field in PropertyZoneSale._meta.fields if not isinstance(field, ForeignKey)] 
     ordering_fields = [field.name for field in PropertyZoneSale._meta.fields if not isinstance(field, ForeignKey)]
