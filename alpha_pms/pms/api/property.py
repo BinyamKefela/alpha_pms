@@ -13,6 +13,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 PROPERTY_AVAILABLE = "available"
 PROPERTY_RENT = "rent"
 PROPERTY_UNDER_MAINTENANCE = "under_maintenance"
+PROPERTY_FOR_SALE = "for_sale"
+PROPERTY_FOR_RENT = "for_rent"
 
 class PropertyListView(generics.ListAPIView):
     queryset = Property.objects.all()
@@ -32,6 +34,10 @@ class PropertyListView(generics.ListAPIView):
         'status':['exact'],
         'property_zone_id': ['exact'],
         'property_type': ['exact'],
+        'city':['exact','icontains'],
+        'address':['exact','icontains'],
+        'state':['exact','icontains'],
+        'price':['exact','gte','lte','gt','lt'],
     }
 
     def get_queryset(self):

@@ -35,6 +35,9 @@ class WorkSpaceRentalListView(generics.ListAPIView):
         'guest_email': ['exact'],
         'start_date': ['exact','gt','gte','lt','lte'],
         'next_due_date': ['exact','gt','gte','lt','lte'],
+        'status':['exact'],
+        'user__email':['exact'],
+        'user__id':['exact']
     }
 
 

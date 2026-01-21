@@ -178,7 +178,7 @@ class Property(models.Model):
     bed_rooms = models.IntegerField(null=True,blank=True)
     bath_rooms = models.IntegerField(null=True,blank=True)
     rent = models.IntegerField(null=True)
-    status = models.CharField(max_length=100,null=False)
+    status = models.CharField(max_length=100,null=False,choices=[("available","available"),("under_maintenance","under_maintenance"),("for_sale","for_sale"),("for_rent","for_rent")])
     created_at = models.DateTimeField(null=True)
     updated_at = models.DateTimeField(null=True)
 
@@ -530,6 +530,7 @@ class WorkSpaceRental(models.Model):
 
     space = models.ForeignKey(CoworkingSpace, on_delete=models.CASCADE, related_name="rentals")
     cycle = models.CharField(max_length=20, choices=CYCLE_CHOICES)
+    status = models.CharField(max_length=100,choices=[("active","active"),("complete","complete"),("terminated","terminated"),("pending","pending")])
 
     start_date = models.DateField()
     next_due_date = models.DateField(blank=True, null=True)  # not full end date
