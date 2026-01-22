@@ -397,5 +397,34 @@ class UserExportSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(format="%Y-%m-%d")
 
 
+class BrokerPropertyForSaleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BrokerPropertySale
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['broker'] = UserSerializer(instance.broker).data
+        return representation
+
+# Add this at the end of serializers.py or in an appropriate location
+
+class BrokerPropertySalePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BrokerPropertySalePicture
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['broker_property_sale'] = BrokerPropertyForSaleSerializer(instance.broker_property_sale).data
+        return representation
+    
+
+class BrokerPropertySaleRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BrokerPropertySaleRequest
+        fields = "__all__"
+
+
 
 

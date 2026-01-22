@@ -593,5 +593,44 @@ class BrokerTransaction(models.Model):
      created_at = models.DateTimeField(auto_now_add=True)
      updated_at = models.DateTimeField(auto_now=True)
 
+class BrokerPropertySale(models.Model):
+    broker = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="broker_property_for_sale")
+    buyer = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="buyer_property_for_sale")
+    property_type = models.CharField(max_length=100,null=True,choices=[("residential","residential"),("commercial","commercial"),("land","land"),("industrial","industrial"),("other","other")])
+    listing_price = models.DecimalField(max_digits=12, decimal_places=2)
+    description = models.CharField(max_length=500,null=True,blank=True)
+    address = models.CharField(max_length=200,null=True)
+    city = models.CharField(max_length=100,null=True)
+    state = models.CharField(max_length=100,null=True)
+    selling_price = models.DecimalField(max_digits=12, decimal_places=2,null=True,blank=True)
+    status = models.CharField(max_length=100,choices=[("pending","pending"),("canceled","canceled"),("sold","sold")])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+def get_broker_property_sale_upload_path(instance,filename):
+    ext = filename.split('.')[-1]
+    new_file_name = "broker_property_sale/"+f'{filename}'
+    return new_file_name
+
+class BrokerPropertySalePicture(models.Model):
+    broker_property_sale = models.ForeignKey(BrokerPropertySale,on_delete=models.SET_NULL,null=True,related_name="broker_property_sale_pictures")
+    image = models.FileField(upload_to=get_broker_property_sale_upload_path,validators=[validate_uploaded_image_extension],null=True,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+        
+    def delete(self, *args, **kwargs):
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        return super().delete(*args, **kwargs)
+
+class BrokerPropertySaleRequest(models.Model):
+    broker_property_sale = models.ForeignKey(BrokerPropertySale,on_delete=models.SET_NULL,null=True,related_name="broker_property_sale_requests")
+    requester = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="broker_property_sale_requester")
+    message = models.CharField(max_length=500,null=True,blank=True)
+    status = models.CharField(max_length=100,choices=[("pending","pending"),("approved","approved"),("rejected","rejected")])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
    

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
+from alpha_pms.pms.api.broker_property_sale_picture import BrokerPropertySalePictureCreateView, BrokerPropertySalePictureDestroyView, BrokerPropertySalePictureListView, BrokerPropertySalePictureRetrieveView, BrokerPropertySalePictureUpdateView
 from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView,TokenVerifyView)
 
 from pms.api.property_zone import *
@@ -36,6 +37,8 @@ from .api.broker_transaction import *
 from .api.notification_user import *
 from .api.owner_manager import *
 from .api.sales_payment_picture import *
+from .api.broker_property_sale import *
+from .api.broker_property_sale_request import *
 
 
 
@@ -183,7 +186,7 @@ urlpatterns = [
 
 
 
- #---------------------------------notification routes--------------------------------------------------
+  #---------------------------------notification routes--------------------------------------------------
 
   path("get_notifications", NotificationListView.as_view(), name="get_notifications"),
   path("get_notification/<int:id>",NotificationRetrieveView.as_view(),name='get_notification'),
@@ -259,7 +262,7 @@ urlpatterns = [
    path('create_property_sale_listing', create_property_sale_listing, name='create_property_sale_listing'),
    path('sell_property', sell_property, name='sell_property'),
 
-     #---------------------------------Plan routes-------------------------------------------------------
+  #---------------------------------Plan routes-------------------------------------------------------
 
   path('get_plans',PlanListView.as_view(),name='get_plans'),
   path('get_plan/<int:id>',PlanRetrieveView.as_view(),name='get_plan'),
@@ -312,7 +315,7 @@ urlpatterns = [
   path("delete_property_zone_picture/<int:id>",PropertyZonePictureDestroyView.as_view(),name="delete_property_zone_picture"),
 
 
-#---------------------------------  sales payment Picture routes--------------------------------------------
+  #---------------------------------  sales payment Picture routes--------------------------------------------
 
   path("get_sales_payment_pictures", SalesPaymentPictureListView.as_view(), name="get_property_pictures"),
   path("get_sales_payment_picture/<int:id>",SalesPaymentPictureRetrieveView.as_view(),name='get_property_picture'),
@@ -350,14 +353,14 @@ urlpatterns = [
   path('delete_rent_commission/<int:id>',RentCommissionDestroyView.as_view(),name='delete_rent_commission'),
 
 
-    #---------------------------------saas transaction routes-------------------------------------------------------
+  #---------------------------------saas transaction routes-------------------------------------------------------
   path('get_saas_transactions',SAASTransactionListView.as_view(),name='get_saas_transactions'),
   path('get_saas_transaction/<int:id>',SAASTransactionRetrieveView.as_view(),name='get_saas_transaction'),
   path('post_saas_transaction',SAASTransactionCreateView.as_view(),name='post_saas_transaction'),
   path('update_saas_transaction/<int:id>',SAASTransactionUpdateView.as_view(),name='update_saas_transaction'),
   path('delete_saas_transaction/<int:id>',SAASTransactionDestroyView.as_view(),name='delete_saas_transaction'),
   
-    #---------------------------------saas transaction routes-------------------------------------------------------
+  #---------------------------------saas transaction routes-------------------------------------------------------
   path('get_broker_transactions',BrokerTransactionListView.as_view(),name='get_broker_transactions'),
   path('get_broker_transaction/<int:id>',BrokerTransactionRetrieveView.as_view(),name='get_broker_transaction'),
   path('post_broker_transaction',BrokerTransactionCreateView.as_view(),name='post_broker_transaction'),
@@ -372,12 +375,26 @@ urlpatterns = [
   path('export-users', ExportUsersReportView.as_view(), name='export-users'),
   path("payments-export/", PaymentsExportReportView.as_view(), name="payments-export"),
 
+  #---------------------------------Broker Property For Sale routes-------------------------------------------------------
+  path('get_broker_property_sales',BrokerPropertyForSaleListView.as_view(),name='get_broker_property_sales'),
+  path('get_broker_property_sale/<int:id>',BrokerPropertyForSaleRetrieveView.as_view(),name='get_broker_property_sale'),
+  path('post_broker_property_sale',BrokerPropertyForSaleCreateView.as_view(),name='post_broker_property_sale'),
+  path('update_broker_property_sale/<int:id>',BrokerPropertyForSaleUpdateView.as_view(),name='update_broker_property_sale'),
+  path('delete_broker_property_sale/<int:id>',BrokerPropertyForSaleDestroyView.as_view(),name='delete_broker_property_sale'),
+  path('sell_broker_property',sell_broker_property,name='sell_broker_property'), 
 
+  #---------------------------------Broker Property Sale Picture routes-------------------------------------------------------
+  path('get_broker_property_sale_pictures',BrokerPropertySalePictureListView.as_view(),name='get_broker_property_sale_pictures'),
+  path('get_broker_property_sale_picture/<int:id>',BrokerPropertySalePictureRetrieveView.as_view(),name='get_broker_property_sale_picture'),
+  path('post_broker_property_sale_picture',BrokerPropertySalePictureCreateView.as_view(),name='post_broker_property_sale_picture'),
+  path('update_broker_property_sale_picture/<int:id>',BrokerPropertySalePictureUpdateView.as_view(),name='update_broker_property_sale_picture'),
+  path('delete_broker_property_sale_picture/<int:id>',BrokerPropertySalePictureDestroyView.as_view(),name='delete_broker_property_sale_picture'),
 
-
-
-
-
-
+  #---------------------------------Broker Property Sale Request routes-------------------------------------------------------
+  path('get_broker_property_sale_requests',BrokerPropertySaleRequestListView.as_view(),name='get_broker_property_sale_requests'),
+  path('get_broker_property_sale_request/<int:id>',BrokerPropertySaleRequestRetrieveView.as_view(),name='get_broker_property_sale_request'),
+  path('post_broker_property_sale_request',BrokerPropertySaleRequestCreateView.as_view(),name='post_broker_property_sale_request'),
+  path('update_broker_property_sale_request/<int:id>',BrokerPropertySaleRequestUpdateView.as_view(),name='update_broker_property_sale_request'),
+  path('delete_broker_property_sale_request/<int:id>',BrokerPropertySaleRequestDestroyView.as_view(),name='delete_broker_property_sale_request'),
 
 ]
