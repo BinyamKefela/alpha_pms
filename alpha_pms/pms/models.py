@@ -178,6 +178,8 @@ class Property(models.Model):
     bed_rooms = models.IntegerField(null=True,blank=True)
     bath_rooms = models.IntegerField(null=True,blank=True)
     rent = models.IntegerField(null=True)
+    area = models.CharField(max_length=100,null=True,blank=True)
+    description = models.CharField(max_length=500,null=True,blank=True)
     status = models.CharField(max_length=100,null=False,choices=[("available","available"),("under_maintenance","under_maintenance"),("for_sale","for_sale"),("for_rent","for_rent")])
     created_at = models.DateTimeField(null=True)
     updated_at = models.DateTimeField(null=True)
@@ -499,7 +501,8 @@ class CoworkingSpace(models.Model):
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    capacity = models.IntegerField()
+    capacity = models.IntegerField(default=1)
+    service_type = models.CharField(max_length=100,choices=[("single_space","single_space"),("multiple_space","multiple_space"),("private_space","private_space"),("meeting_room","meeting_room"),('office','office'),('event_space','event_space'),('other','other')],null=True,blank=True)
 
     price_daily = models.DecimalField(max_digits=10, decimal_places=2)
     price_monthly = models.DecimalField(max_digits=10, decimal_places=2)
@@ -512,6 +515,15 @@ class CoworkingSpace(models.Model):
         return f"{self.name} - {self.location}"
     class Meta:
         unique_together = ('name','zone')
+
+class CoworkingSpacePicture(models.Model):
+    coworking_space = models.ForeignKey(CoworkingSpace, on_delete=models.CASCADE, related_name="pictures")
+    image = models.FileField(upload_to='coworking_space_pictures/', validators=[validate_uploaded_image_extension])
+    description = models.CharField(max_length=255, blank=True, null=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Picture for {self.coworking_space.name}"
 
 
 class WorkSpaceRental(models.Model):

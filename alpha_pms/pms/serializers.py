@@ -320,6 +320,15 @@ class CoworkingSpaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = CoworkingSpace
         fields = "__all__"
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['zone'] = PropertyZoneSerializer(instance.zone).data
+        return representation
+    
+class CoworkingSpacePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoworkingSpacePicture
+        fields = "__all__"
 
 
 class WorkSpaceRentalSerializer(serializers.ModelSerializer):

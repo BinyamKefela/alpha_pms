@@ -39,6 +39,7 @@ from .api.owner_manager import *
 from .api.sales_payment_picture import *
 from .api.broker_property_sale import *
 from .api.broker_property_sale_request import *
+from .api.coworking_space_picture import *
 
 
 
@@ -298,7 +299,7 @@ urlpatterns = [
   path('post_broker_profile',BrokerProfileCreateView.as_view(),name='post_broker_profile'),
   path('update_broker_profile/<int:id>',BrokerProfileUpdateView.as_view(),name='update_broker_profile'),
   path('delete_broker_profile/<int:id>',BrokerProfileDestroyView.as_view(),name='delete_broker_profile'),
-  path('broker_sign_up', BrokerProfileSignupView.as_view(), name='broker_sign_up'),
+  #path('broker_sign_up', BrokerProfileSignupView.as_view(), name='broker_sign_up'),
 
 
  #--------------------------------commission routes-------------------------------------------------------
@@ -332,6 +333,13 @@ urlpatterns = [
   path("post_coworking_space",CoworkingSpaceCreateView.as_view(),name="post_coworking_space"),
   path("update_coworking_space/<int:id>",CoworkingSpaceUpdateView.as_view(),name="update_coworking_space"),
   path("delete_coworking_space/<int:id>",CoworkingSpaceDestroyView.as_view(),name="delete_coworking_space"),
+
+  #---------------------------------Coworking Space Picture routes------------------------------------------------------
+  path("get_coworking_space_pictures", CoworkingSpacePictureListView.as_view(), name="get_coworking_space_pictures"),
+  path("get_coworking_space_picture/<int:id>",CoworkingSpacePictureRetrieveView.as_view(),name='get_coworking_space_picture'),
+  path("post_coworking_space_picture",CoworkingSpacePictureCreateView.as_view(),name="post_coworking_space_picture"),
+  path("update_coworking_space_picture/<int:id>",CoworkingSpacePictureUpdateView.as_view(),name="update_coworking_space_picture"),
+  path("delete_coworking_space_picture/<int:id>",CoworkingSpacePictureDestroyView.as_view(),name="delete_coworking_space_picture"),
 
   #---------------------------------Workspace Rental routes------------------------------------------------------
   path("get_workspace_rentals", WorkSpaceRentalListView.as_view(), name="get_workspace_rentals"),
