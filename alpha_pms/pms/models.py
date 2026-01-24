@@ -477,8 +477,8 @@ class RentCommission(models.Model):
 
 class BrokerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="broker_profile")
-    license_number = models.CharField(max_length=100)
-    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.02)
+    license_number = models.CharField(max_length=100,null=True,blank=True)
+    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     wallet = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

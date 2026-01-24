@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.filters import OrderingFilter, SearchFilter
-from ..models import BrokerPropertyForSale, BrokerPropertySale
+from ..models import BrokerPropertySale
 from ..serializers import BrokerPropertyForSaleSerializer
 from pms.api.custom_pagination import CustomPagination
 import datetime
@@ -27,7 +27,7 @@ class BrokerPropertyForSaleListView(generics.ListAPIView):
     permission_classes = []
     filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
     search_fields = ["description", "property_type", "address", "city", "state"]
-    ordering_fields = [field.name for field in BrokerPropertyForSale._meta.fields]
+    ordering_fields = [field.name for field in BrokerPropertySale._meta.fields]
     ordering = ['id']
     pagination_class = CustomPagination
     filterset_fields = {

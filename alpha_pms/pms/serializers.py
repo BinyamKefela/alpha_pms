@@ -112,6 +112,10 @@ class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
         fields = "__all__"
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['property_zone'] = PropertyZoneSerializer(instance.property_zone_id).data
+        return representation
 
 class RentSerializer(serializers.ModelSerializer):
     property_id = serializers.PrimaryKeyRelatedField(queryset=Property.objects.all(),many=False,required=False)

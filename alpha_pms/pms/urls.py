@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from alpha_pms.pms.api.broker_property_sale_picture import BrokerPropertySalePictureCreateView, BrokerPropertySalePictureDestroyView, BrokerPropertySalePictureListView, BrokerPropertySalePictureRetrieveView, BrokerPropertySalePictureUpdateView
+from .api.broker_property_sale_picture import BrokerPropertySalePictureCreateView, BrokerPropertySalePictureDestroyView, BrokerPropertySalePictureListView, BrokerPropertySalePictureRetrieveView, BrokerPropertySalePictureUpdateView
 from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView,TokenVerifyView)
 
 from pms.api.property_zone import *
@@ -60,6 +60,7 @@ urlpatterns = [
   path("get_managers",get_managers,name="get_managers"),
   path("get_tenants",GetTenats.as_view(),name="get_tenants"),
   path('sign_up',sign_up, name='sign_up'),
+  path('my_tenants', my_tenants, name='my_tenants'),
 
   #path('register',sign_up_zone_owner, name='register'),
   path('verify-email/<uuid:token>', verify_email, name='verify_email'),
@@ -297,6 +298,7 @@ urlpatterns = [
   path('post_broker_profile',BrokerProfileCreateView.as_view(),name='post_broker_profile'),
   path('update_broker_profile/<int:id>',BrokerProfileUpdateView.as_view(),name='update_broker_profile'),
   path('delete_broker_profile/<int:id>',BrokerProfileDestroyView.as_view(),name='delete_broker_profile'),
+  path('broker_sign_up', BrokerProfileSignupView.as_view(), name='broker_sign_up'),
 
 
  #--------------------------------commission routes-------------------------------------------------------

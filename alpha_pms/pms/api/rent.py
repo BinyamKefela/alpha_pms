@@ -35,6 +35,9 @@ class RentListView(generics.ListAPIView):
         'property_id__property_zone_id__manager_id__email': ['exact'],
         'user_id__email':['exact'],
         'user_id':['exact'],
+        'status':['exact'],
+        'start_date':['exact','gt','gte','lt','lte'],
+        'end_date':['exact','gt','gte','lt','lte'],
     }
 
     def get_queryset(self):

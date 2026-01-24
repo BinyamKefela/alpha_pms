@@ -19,6 +19,8 @@ import json
 from ..models import *
 from datetime import datetime
 from rest_framework.permissions import AllowAny
+from django.db import transaction
+
 
 
 User = get_user_model()
@@ -60,13 +62,13 @@ class UserDestroyView(generics.DestroyAPIView):
 
         return super().handle_exception(exc)
 
-    def destroy(self, request, *args, **kwargs):
+    """ def destroy(self, request, *args, **kwargs):
         user_to_deactivate = self.get_object()
         if not user_to_deactivate:
             return Response({"error":"There is no user with the given id!"},status=status.HTTP_404_NOT_FOUND)
         user_to_deactivate.is_active = False
         user_to_deactivate.save()
-        return Response({"message":"user deactivated successfully"},status=status.HTTP_200_OK)
+        return Response({"message":"user deactivated successfully"},status=status.HTTP_200_OK) """
 
 class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -300,6 +302,7 @@ def get_tenants(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@transaction.atomic
 def sign_up(request):
         if User.objects.filter(email=request.data.get("email")).count()>0:
             return Response({"error":"This email already exists in the system"},status=status.HTTP_403_FORBIDDEN)
@@ -341,7 +344,7 @@ def sign_up(request):
                owner.company_email = user.email
                owner.created_at = datetime.datetime.now()
                owner.save()'''
-               if not request.data.get("is_manager") and not request.data.get("is_staff"):
+               if not request.data.get("is_manager") and not request.data.get("is_staff") and not request.data.get("is_tenant") and not request.data.get("is_broker"):
                     subscription = Subscription()
                     subscription.plan_name = Plan.objects.get(id=request.data.get("plan")).name
                     subscription.start_date = request.data.get("start_date")
@@ -386,7 +389,18 @@ def sign_up(request):
                 except User.DoesNotExist:
                     return Response({"error":"owner with the given id does not exist"},status=status.HTTP_404_NOT_FOUND)
             
-            #if serializer.is_valid():
+            if request.data.get("is_tenant"):
+                try:
+                   user.groups.set(Group.objects.filter(name="tenant"))
+                except User.DoesNotExist:
+                    return Response({"error":"owner with the given id does not exist"},status=status.HTTP_404_NOT_FOUND)
+            
+            if request.data.get("is_broker"):
+                try:
+                   user.groups.set(Group.objects.filter(name="broker"))
+                except User.DoesNotExist:
+                    return Response({"error":"owner with the given id does not exist"},status=status.HTTP_404_NOT_FOUND)
+                BrokerProfile.objects.create(user=user)
             #    user = serializer.save(is_active=False)  # Initially set user as inactive
             verification = EmailVerification.objects.create(user=user)
         from urllib.parse import urljoin
@@ -520,6 +534,8 @@ def create_staff(request):
     #   return Response({"message":"you don't have the permission to create a user"},status=status.HTTP_403_FORBIDDEN)
     if not request.user.groups.filter(name="owner").exists():
         return Response({"message":"you must be an owner to create a new staff"},status=status.HTTP_403_FORBIDDEN)
+    if not request.data.get("property_zone"):
+        return Response({"message":"please provide property zone id"},status=status.HTTP_400_BAD_REQUEST)
     user=User()
     user.email = request.data.get("email")
     user.is_active=True
@@ -622,6 +638,104 @@ def contact_us(request):
 
     return Response({"success":"sent email successfully"},status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_tenants(request):
+    if not request.user.has_perm('pms.view_user'):
+        return Response(
+            {"message": "You don't have permission to view users"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    user = request.user
+    owner = None
+
+    # OWNER
+    if user.groups.filter(name="owner").exists():
+        owner = user
+    elif user.owner_staff.exists():
+        owner = user
+
+    # STAFF
+    elif user.staff_owner.exists():
+        owner = user.staff_owner.first().owner
+
+    # MANAGER
+    elif user.manager_manager.exists():
+        staff = user.manager_manager.first().owner
+        staff_link = staff.staff_owner.first()
+        if staff_link:
+            owner = staff_link.owner
+
+    if not owner:
+        return Response(
+            {"message": "You are not linked to any owner"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    tenants = User.objects.filter(
+        rent__property_id__owner_id=owner,
+        groups__name="tenant"
+    ).distinct()
+
+    paginator = CustomPagination()
+    paginated_tenants = paginator.paginate_queryset(tenants, request)
+    # simple query-parameter based filtering + ordering applied to the paginated page
+
+    if user.is_superuser:
+        tenants = User.objects.filter(
+            groups__name="tenant"
+        ).distinct()
+        paginator = CustomPagination()
+        paginated_tenants = paginator.paginate_queryset(tenants, request)
+    params = request.query_params
+    q = params.get('q') or params.get('search')
+    first_name = params.get('first_name')
+    last_name = params.get('last_name')
+    email = params.get('email')
+    phone = params.get('phone_number')
+    is_active = params.get('is_active')
+    ordering = params.get('ordering')
+
+    def _contains(obj, attr, val):
+        v = getattr(obj, attr, '') or ''
+        return val.lower() in str(v).lower()
+
+    if q:
+        ql = q.lower()
+        paginated_tenants = [
+            u for u in paginated_tenants
+            if ql in (u.first_name or '').lower()
+            or ql in (u.middle_name or '').lower()
+            or ql in (u.last_name or '').lower()
+            or ql in (u.email or '').lower()
+            or ql in (u.phone_number or '').lower()
+        ]
+
+    if first_name:
+        paginated_tenants = [u for u in paginated_tenants if _contains(u, 'first_name', first_name)]
+    if last_name:
+        paginated_tenants = [u for u in paginated_tenants if _contains(u, 'last_name', last_name)]
+    if email:
+        paginated_tenants = [u for u in paginated_tenants if _contains(u, 'email', email)]
+    if phone:
+        paginated_tenants = [u for u in paginated_tenants if _contains(u, 'phone_number', phone)]
+
+    if is_active is not None:
+        truthy = str(is_active).lower() in ('1', 'true', 'yes')
+        paginated_tenants = [u for u in paginated_tenants if bool(u.is_active) == truthy]
+
+    if ordering:
+        rev = False
+        field = ordering
+        if ordering.startswith('-'):
+            rev = True
+            field = ordering[1:]
+        allowed = [f.name for f in User._meta.fields]
+        if field in allowed:
+            paginated_tenants = sorted(paginated_tenants, key=lambda u: getattr(u, field) or '', reverse=rev)
+    serializer = UserSerializer(paginated_tenants, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 
     
