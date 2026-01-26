@@ -19,7 +19,7 @@ class CoworkingSpacePictureListView(generics.ListAPIView):
     ordering = ['id']
     pagination_class = CustomPagination
     filterset_fields = {
-        'CoworkingSpace_id__id'
+        'CoworkingSpace__id': ['exact'],
     }
 
 
