@@ -323,6 +323,7 @@ class CoworkingSpaceSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['zone'] = PropertyZoneSerializer(instance.zone).data
+        representation['pictures'] = CoworkingSpacePictureSerializer(CoworkingSpacePicture.objects.filter(CoworkingSpace_id=instance.id), many=True).data
         return representation
     
 class CoworkingSpacePictureSerializer(serializers.ModelSerializer):
