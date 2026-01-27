@@ -322,8 +322,9 @@ class CoworkingSpaceSerializer(serializers.ModelSerializer):
         fields = "__all__"
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['zone'] = PropertyZoneSerializer(instance.zone).data
-        representation['pictures'] = CoworkingSpacePictureSerializer(CoworkingSpacePicture.objects.filter(CoworkingSpace_id=instance.id), many=True).data
+        representation['zone'] = PropertyZoneSerializer(instance.zone).data if getattr(instance, 'zone', None) else None
+        # use the related_name 'pictures' on CoworkingSpacePicture and avoid incorrect field lookup
+        representation['pictures'] = CoworkingSpacePictureSerializer(instance.pictures.all(), many=True).data
         return representation
     
 class CoworkingSpacePictureSerializer(serializers.ModelSerializer):
@@ -438,6 +439,36 @@ class BrokerPropertySaleRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = BrokerPropertySaleRequest
         fields = "__all__"
+
+class PropertyCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Property
+        exclude = ("id", "created_at", "updated_at")
+
+from django.db import transaction
+
+class BrokerPropertySaleCreateSerializer(serializers.ModelSerializer):
+    property = PropertyCreateSerializer(write_only=True)
+
+    class Meta:
+        model = BrokerPropertySale
+        fields = "__all__"
+
+    @transaction.atomic
+    def create(self, validated_data):
+        property_data = validated_data.pop("property")
+
+        # Create property
+        property_obj = Property.objects.create(**property_data)
+
+        # Create broker sale
+        sale = BrokerPropertySale.objects.create(
+            property=property_obj,
+            **validated_data
+        )
+
+        return sale
+
 
 
 

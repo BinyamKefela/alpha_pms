@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.filters import OrderingFilter, SearchFilter
 from ..models import BrokerPropertySale
-from ..serializers import BrokerPropertyForSaleSerializer
+from ..serializers import BrokerPropertyForSaleSerializer, BrokerPropertySaleCreateSerializer
 from pms.api.custom_pagination import CustomPagination
 import datetime
 from rest_framework.response import Response
@@ -78,22 +78,12 @@ class BrokerPropertyForSaleDestroyView(generics.DestroyAPIView):
 
 class BrokerPropertyForSaleCreateView(generics.CreateAPIView):
     queryset = BrokerPropertySale.objects.all()
-    serializer_class = BrokerPropertyForSaleSerializer
-    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    serializer_class = BrokerPropertySaleCreateSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        validated_data = serializer.validated_data
-        validated_data['created_at'] = datetime.datetime.now()
-        serializer.save()
+        serializer.save(broker=self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        # Assuming no limit check for broker properties, or adjust as needed
-        return super().create(request, *args, **kwargs)
-
-    def perform_update(self, serializer):
-        validated_data = serializer.validated_data
-        validated_data['updated_at'] = datetime.datetime.now()
-        serializer.save()
 
 @swagger_auto_schema(
     method='post',
