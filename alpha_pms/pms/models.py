@@ -137,6 +137,7 @@ class PropertyZone(models.Model):
     state = models.CharField(max_length=100,null=False)
     latitude = models.CharField(max_length=500,null=True)
     longitude = models.CharField(max_length=500,null=True,blank=True)
+    description = models.CharField(max_length=500,null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True) 
 
