@@ -137,6 +137,8 @@ def make_payment(request):
 
     total = sum([c.amount_due for c in unpaid_cycles])
 
+    slip_picture = request.FILES.get("slip_picture")
+
     payment = Payment.objects.create(
         rent_id = rent,
         user_id = request.user,
@@ -145,6 +147,7 @@ def make_payment(request):
         status = PAYMENT_PENDING,
         payment_method = payment_method,
         transaction_id = transaction_id,
+        slip_picture = slip_picture,
         created_at = datetime.datetime.now()
     )
 

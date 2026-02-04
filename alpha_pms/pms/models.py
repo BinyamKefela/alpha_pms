@@ -263,6 +263,11 @@ class RentPicture(models.Model):
 
 auditlog.register(RentPicture)
 
+def get_payment_slip_upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    # instance.__class__.__name__ will be Payment, SubscriptionPayment, or RentalPayment
+    return f"payment_slips/{instance.__class__.__name__}/{filename}"
+
 class Payment(models.Model):
     rent_id = models.ForeignKey(Rent,on_delete=models.SET_NULL,null=True)
     user_id = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
@@ -271,6 +276,7 @@ class Payment(models.Model):
     status = models.CharField(max_length=100)
     payment_method = models.CharField(max_length=100)
     transaction_id = models.CharField(max_length=100,null=True)
+    slip_picture = models.FileField(upload_to=get_payment_slip_upload_path, validators=[validate_uploaded_image_extension], null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     updated_at = models.DateTimeField(null=True)
 
@@ -343,6 +349,7 @@ class SubscriptionPayment(models.Model):
     status = models.CharField(max_length=100,null=False)
     paid_at = models.DateTimeField(null=True,blank=True)
     transaction_id = models.CharField(max_length=100,null=False)
+    slip_picture = models.FileField(upload_to=get_payment_slip_upload_path, validators=[validate_uploaded_image_extension], null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
 
@@ -582,6 +589,7 @@ class RentalPayment(models.Model):
     paid_at = models.DateTimeField(auto_now_add=True)
     cycle_start = models.DateField(null=True,blank=True)
     cycle_end = models.DateField()
+    slip_picture = models.FileField(upload_to=get_payment_slip_upload_path, validators=[validate_uploaded_image_extension], null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

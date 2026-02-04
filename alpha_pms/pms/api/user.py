@@ -271,7 +271,7 @@ def get_owners(request):
     owners = User.objects.filter(groups__name="owner")
         
     # Concatenate first_name and middle_name (if middle_name exists) into one field
-    owners_data = owners.annotate(full_name=Concat(F('first_name'), Value(' '), F('middle_name'),Value(' '),F('last_name'))).values("id", "full_name")
+    owners_data = owners.annotate(full_name=Concat(F('first_name'), Value(' '), F('middle_name'),Value(' '),F('last_name'))).values("id", "full_name", "email", phone=F("phone_number"))
     
     # Return the response with the data
     return Response({"owners": owners_data}, status=status.HTTP_200_OK)
@@ -436,8 +436,8 @@ def verify_email(request, token):
 def create_manager(request):
     #if not request.user.has_perm('add_user'):
     #   return Response({"message":"you don't have the permission to create a user"},status=status.HTTP_403_FORBIDDEN)
-    if not request.user.groups.filter(name="staff").exists():
-        return Response({"message":"you must be a staff to create a new manager"},status=status.HTTP_403_FORBIDDEN)
+    if not request.user.groups.filter(name="staff").exists() and not request.user.groups.filter(name="owner").exists():
+        return Response({"message":"you must be a staff or owner to create a new manager"},status=status.HTTP_403_FORBIDDEN)
     serializer = UserSerializer(data=request.data)
     user=User()
     user.email = request.data.get("email")

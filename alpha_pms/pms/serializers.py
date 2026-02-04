@@ -115,6 +115,7 @@ class PropertySerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['property_zone'] = PropertyZoneSerializer(instance.property_zone_id).data
+        representation['pictures'] = PropertyPictureSerializer(PropertyPicture.objects.filter(property_id=instance.id),many=True).data
         return representation
 
 class RentSerializer(serializers.ModelSerializer):
@@ -420,6 +421,8 @@ class BrokerPropertyForSaleSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['broker'] = UserSerializer(instance.broker).data
+        representation['property'] = PropertySerializer(instance.property).data
+        representation['pictures'] = BrokerPropertySalePictureSerializer(BrokerPropertySalePicture.objects.filter(broker_property_sale_id=instance.id),many=True).data
         return representation
 
 # Add this at the end of serializers.py or in an appropriate location
@@ -431,7 +434,7 @@ class BrokerPropertySalePictureSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['broker_property_sale'] = BrokerPropertyForSaleSerializer(instance.broker_property_sale).data
+        #representation['broker_property_sale'] = BrokerPropertyForSaleSerializer(instance.broker_property_sale).data
         return representation
     
 
