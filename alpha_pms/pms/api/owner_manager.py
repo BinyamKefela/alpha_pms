@@ -11,7 +11,7 @@ from django.conf import settings
 from rest_framework.exceptions import NotFound
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import ForeignKey
+from django.db.models import ForeignKey, Q
 
 
 
@@ -31,6 +31,40 @@ class OwnerManagerListView(generics.ListAPIView):
     ordering_fields = [field.name for field in OwnerManager._meta.fields if not isinstance(field, ForeignKey)]
     ordering = ['id']
     pagination_class = CustomPagination
+
+    def get_queryset(self):
+        return super().get_queryset()
+
+    def filter_queryset(self, queryset):
+        request = self.request
+        user = request.user
+        # If requester is an owner, remove any owner__id filter from query params
+        if user.groups.filter(name="owner").exists():
+            try:
+                params = request._request.GET.copy()
+            except Exception:
+                params = request.query_params.copy()
+            removed = False
+            for key in ("owner__id", "owner__id[]"):
+                if key in params:
+                    params.pop(key, None)
+                    removed = True
+            if removed:
+                request._request.GET = params
+                # update raw query string to keep consistency
+                try:
+                    request._request.META['QUERY_STRING'] = params.urlencode()
+                except Exception:
+                    pass
+
+        # Apply other filters normally
+        queryset = super().filter_queryset(queryset)
+
+        # Finally ensure owners only see allowed records
+        if user.groups.filter(name="owner").exists():
+            queryset = queryset.filter(Q(owner=user) | Q(property_zone__owner_id=user))
+
+        return queryset
 
 
 
