@@ -737,5 +737,23 @@ def my_tenants(request):
     serializer = UserSerializer(paginated_tenants, many=True)
     return paginator.get_paginated_response(serializer.data)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    """ if not request.user.has_perm('pms.change_user'):
+        return Response({"message":"you don't have the permission to change a user's password"},status=status.HTTP_403_FORBIDDEN) """
+    user = request.user
+    old_password = request.data.get('old_password')
+    new_password = request.data.get('new_password')
+    try:
+        user = User.objects.get(id=user.id)
+    except User.DoesNotExist:
+        return Response({"message":"user does not exist"},status=status.HTTP_404_NOT_FOUND)
+    if not user.check_password(old_password):
+        return Response({"message":"old password is incorrect"},status=status.HTTP_400_BAD_REQUEST)
+    user.set_password(new_password)
+    user.save()    
+    return Response({"message":"password changed successfully!"},status=status.HTTP_200_OK)
+
 
     

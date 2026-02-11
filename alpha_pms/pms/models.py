@@ -180,6 +180,9 @@ class Property(models.Model):
     bath_rooms = models.IntegerField(null=True,blank=True)
     rent = models.IntegerField(null=True)
     area = models.CharField(max_length=100,null=True,blank=True)
+    block_number = models.CharField(max_length=100,null=True,blank=True)
+    floor_number = models.IntegerField(null=True,blank=True)
+    house_number = models.CharField(max_length=100,null=True,blank=True)
     description = models.CharField(max_length=500,null=True,blank=True)
     status = models.CharField(max_length=100,null=False,choices=[("available","available"),("under_maintenance","under_maintenance"),("for_sale","for_sale"),("for_rent","for_rent")])
     created_at = models.DateTimeField(null=True)
@@ -540,6 +543,7 @@ class WorkSpaceRental(models.Model):
         ("monthly", "Monthly"),
         ("quarterly", "Quarterly"),
         ("yearly", "Yearly"),
+        ("custom", "Custom"),
     ]
 
     # either link to a registered user OR store guest info

@@ -62,6 +62,7 @@ urlpatterns = [
   path("get_tenants",GetTenats.as_view(),name="get_tenants"),
   path('sign_up',sign_up, name='sign_up'),
   path('my_tenants', my_tenants, name='my_tenants'),
+  path('change_password', change_password, name='change_password'),
 
   #path('register',sign_up_zone_owner, name='register'),
   path('verify-email/<uuid:token>', verify_email, name='verify_email'),
