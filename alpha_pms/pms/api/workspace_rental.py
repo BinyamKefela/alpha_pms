@@ -80,7 +80,7 @@ class WorkSpaceRentalCreateView(generics.CreateAPIView):
         space_id = request.data.get('space')
         try:
             space = CoworkingSpace.objects.get(id=space_id)
-            if space.capacity< WorkSpaceRental.objects.filter(is_active=True,space=space).count():
+            if space.capacity< WorkSpaceRental.objects.filter(is_active=True,space=space,next_due_date__gt=request.data.get('start_date')).count():
                 return Response({"error":"There is no free space in the given workspace"},status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({"error":"there is no coworking space with the given coworking space id"},status=status.HTTP_400_BAD_REQUEST)

@@ -183,6 +183,8 @@ class Property(models.Model):
     block_number = models.CharField(max_length=100,null=True,blank=True)
     floor_number = models.IntegerField(null=True,blank=True)
     house_number = models.CharField(max_length=100,null=True,blank=True)
+    latitude = models.CharField(max_length=100,null=True,blank=True)
+    longitude = models.CharField(max_length=100,null=True,blank=True)
     description = models.CharField(max_length=500,null=True,blank=True)
     status = models.CharField(max_length=100,null=False,choices=[("available","available"),("under_maintenance","under_maintenance"),("for_sale","for_sale"),("for_rent","for_rent")])
     created_at = models.DateTimeField(null=True)

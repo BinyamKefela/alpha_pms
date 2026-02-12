@@ -326,6 +326,7 @@ class CoworkingSpaceSerializer(serializers.ModelSerializer):
         representation['zone'] = PropertyZoneSerializer(instance.zone).data if getattr(instance, 'zone', None) else None
         # use the related_name 'pictures' on CoworkingSpacePicture and avoid incorrect field lookup
         representation['pictures'] = CoworkingSpacePictureSerializer(instance.pictures.all(), many=True).data
+        representation['rentals'] = WorkSpaceRentalSerializer(WorkSpaceRental.objects.filter(space=instance), many=True).data
         return representation
     
 class CoworkingSpacePictureSerializer(serializers.ModelSerializer):
